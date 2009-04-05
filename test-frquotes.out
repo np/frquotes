@@ -1,0 +1,11 @@
+{-# OPTIONS_GHC -F -pgmF ./frquotes #-}
+x1 = [$frQQ|some simple french quote|]
+x2 = [$frQQ|some simple french quote |] `mappend` (with a hole) `mappend` [$frQQ| inside of it|]
+x3 = {- «not a french quote» and an «unclosed non french quote here too -} "a literal string"
+x4 = "just «a literal» string" -- here yi is badely coloring it ;(
+x5 = "another string with an \"es«cape" -- here for yi »
+x6 = [$frQQ|some «nested» french quote|]
+x7 = [$frQQ|some «nested» french |] `mappend` (hole) `mappend` [$frQQ| quote|]
+x8 = [$frQQ|some «nested with |] `mappend` (hole) `mappend` [$frQQ|» french |] `mappend` (hole) `mappend` [$frQQ| quote|]
+x8 = [$frQQ|some «nested with |] `mappend` (hole [$frQQ|that reuse quotes|]) `mappend` [$frQQ|» french |] `mappend` (hole) `mappend` [$frQQ| quote|]
+x8 = [$frQQ|some «nested with |] `mappend` (hole [$frQQ|that reuse quotes|] and {braces} also) `mappend` [$frQQ|» french |] `mappend` (hole) `mappend` [$frQQ| quote|]
