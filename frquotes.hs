@@ -11,13 +11,14 @@ interact' f = do
                                 `fmap` readFile inp
     _  -> fail "Usage: frquotes [orig input output]"
 
+frTop = "(frTop ("
 openFrQQ'  = "[$frQQ|"
 closeFrQQ' = "|]"
-openFrQQ  = '(' : openFrQQ'
-closeFrQQ = closeFrQQ' ++ ")"
+openFrQQ  = frTop ++ openFrQQ'
+closeFrQQ = closeFrQQ' ++ "))"
 openFrQ   = "\xc2\xab"
 closeFrQ  = "\xc2\xbb"
-openBr    = closeFrQQ' ++ " `mappend` ("
+openBr    = closeFrQQ' ++ " `mappend` frAntiq ("
 closeBr   = ") `mappend` " ++ openFrQQ'
 
 main :: IO ()
@@ -33,7 +34,7 @@ main = interact' h
         -- haskell context
         -- the h function don't needs a continuation parameter
   where h ""                   = ""
-        h ('\xc2':'\xab':'{':xs) = "(" ++ b (((')':openFrQQ)++) . f ((closeFrQQ++) . h)) xs -- avoid an empty [$frQQ||]
+        h ('\xc2':'\xab':'{':xs) = frTop ++ "( frAntiq (" ++ b ((closeBr++) . f ((closeFrQQ++) . (')':) . h)) xs -- avoid an empty [$frQQ||]
         h ('\xc2':'\xab':xs)   = openFrQQ ++ f ((closeFrQQ++) . h) xs
         h ('{':'-':xs)         = "{-" ++ c (("-}"++) . h) xs
         h ('"':xs)             = '"' : s (('"':) . h) xs
