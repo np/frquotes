@@ -11,12 +11,14 @@ interact' f = do
                                 `fmap` readFile inp
     _  -> fail "Usage: frquotes [orig input output]"
 
-openFrQQ  = "[$frQQ|"
-closeFrQQ = "|]"
+openFrQQ'  = "[$frQQ|"
+closeFrQQ' = "|]"
+openFrQQ  = '(' : openFrQQ'
+closeFrQQ = closeFrQQ' ++ ")"
 openFrQ   = "\xc2\xab"
 closeFrQ  = "\xc2\xbb"
-openBr    = closeFrQQ ++ " `mappend` ("
-closeBr   = ") `mappend` " ++ openFrQQ
+openBr    = closeFrQQ' ++ " `mappend` ("
+closeBr   = ") `mappend` " ++ openFrQQ'
 
 main :: IO ()
 main = interact' h
