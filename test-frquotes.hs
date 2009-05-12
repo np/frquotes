@@ -9,3 +9,5 @@ x7 = «some «nested» french {hole} quote»
 x8 = «some «nested with {hole}» french {hole} quote»
 x8 = «some «nested with {hole «that reuse quotes»}» french {hole} quote»
 x8 = «some «nested with {hole «that reuse quotes» and {braces} also}» french {hole} quote»
+x9 = «{start} with {a} hole»
+x10 = «stop {with} a {hole}»
