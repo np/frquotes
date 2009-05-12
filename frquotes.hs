@@ -33,6 +33,7 @@ main = interact' h
         -- haskell context
         -- the h function don't needs a continuation parameter
   where h ""                   = ""
+        h ('\xc2':'\xab':'{':xs) = "(" ++ b (((')':openFrQQ)++) . f ((closeFrQQ++) . h)) xs -- avoid an empty [$frQQ||]
         h ('\xc2':'\xab':xs)   = openFrQQ ++ f ((closeFrQQ++) . h) xs
         h ('{':'-':xs)         = "{-" ++ c (("-}"++) . h) xs
         h ('"':xs)             = '"' : s (('"':) . h) xs
