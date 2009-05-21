@@ -2,12 +2,14 @@ import System.Environment
 
 -- substitutes UTF8 french quotes «...» for [$e|...|]
 
+-- this shares most code with 'mempty'
+
 interact' :: (String -> String) -> IO ()
 interact' f = do
   args <- getArgs
   case args of
     [] -> interact f
-    [in1,inp,outp] -> writeFile outp =<< ((("{-# LINE 2 \""++in1++"\" #-}")++) . f)
+    [in1,inp,outp] -> writeFile outp =<< ((("{-# LINE 2 \""++in1++"\" #-}\n")++) . f)
                                 `fmap` readFile inp
     _  -> fail "Usage: frquotes [orig input output]"
 
@@ -38,6 +40,8 @@ main = interact' h
         h ('\xc2':'\xab':xs)   = openFrQQ ++ f ((closeFrQQ++) . h) xs
         h ('{':'-':xs)         = "{-" ++ c (("-}"++) . h) xs
         h ('"':xs)             = '"' : s (('"':) . h) xs
+        h ('\'':xs)            = '\'' : a h xs
+        h ('[':'$':xs)         = '[' : '$' : startq h xs
         h (x:xs)               = x : h xs
 
         -- french quotes context
@@ -69,3 +73,20 @@ main = interact' h
         s k ('\\':x:xs)        = '\\' : x : s k xs
         s k ('"':xs)           = k xs
         s k (x:xs)             = x : s k xs
+
+        -- haskell char literal (a bit lenient)
+        a _ ""                 = error "unterminated haskell character (expecting `'')"
+        a k ('\\':x:xs)        = '\\' : x : a k xs
+        a k (x:'\'':xs)
+                   | x /= '\'' = x : '\'' : k xs
+        a k xs                 = k xs
+
+        -- haskell quasi-quotation
+        -- is there nested QQ?
+        q _ ""                 = error "unterminated haskell quasi-quotation (expecting `|]')"
+        q k ('|':']':xs)       = '|' : ']' : k xs
+        q k (x:xs)             = x : q k xs
+        startq k xs = ys ++ '|' : q k zs'
+          where (ys,zs) = break (=='|') xs
+                zs' | null zs   = error "unrecognized haskell quasi-quotation (expecting `|`)"
+                    | otherwise = drop 1 zs
