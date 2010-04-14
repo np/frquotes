@@ -1,17 +1,4 @@
-import System.Environment
-
--- substitutes UTF8 french quotes «...» for [$e|...|]
-
--- this shares most code with 'mempty'
-
-interact' :: (String -> String) -> IO ()
-interact' f = do
-  args <- getArgs
-  case args of
-    [] -> interact f
-    [in1,inp,outp] -> writeFile outp =<< ((("{-# LINE 2 \""++in1++"\" #-}\n")++) . f)
-                                `fmap` readFile inp
-    _  -> fail "Usage: frquotes [orig input output]"
+module Text.FrQuotes (frQuotes) where
 
 frTop, openFrQQ', closeFrQQ', openFrQQ, closeFrQQ,
   openFrQ, closeFrQ, openBr, closeBr :: String
@@ -25,8 +12,12 @@ closeFrQ  = "\xc2\xbb"
 openBr    = closeFrQQ' ++ " `mappend` frAntiq ("
 closeBr   = ") `mappend` " ++ openFrQQ'
 
-main :: IO ()
-main = interact' h
+-- Substitutes UTF8 french quotes «...» for (frTop [$frQQ|...|])
+-- Antiquotations are supported via braces {...} and are
+-- substituted for frAntiq, blocks are catenated with mappend.
+-- Here String is used as UTF-8 code points.
+frQuotes :: String -> String
+frQuotes = h
         -- All these functions follow the same style,
         -- the first argument 'k' is the continuation, i.e. what to do next.
         -- Each function search for a different closing token, if the closing
