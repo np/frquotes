@@ -13,6 +13,8 @@ interact' f = do
                                 `fmap` readFile inp
     _  -> fail "Usage: frquotes [orig input output]"
 
+frTop, openFrQQ', closeFrQQ', openFrQQ, closeFrQQ,
+  openFrQ, closeFrQ, openBr, closeBr :: String
 frTop = "(frTop ("
 openFrQQ'  = "[$frQQ|"
 closeFrQQ' = "|]"
@@ -55,7 +57,7 @@ main = interact' h
         -- braces (haskell) context
         b _ ""                 = error "unterminated quotes hole using curly braces (expecting `}')"
         b k ('\xc2':'\xab':xs) = openFrQQ ++ f ((closeFrQQ++) . b k) xs
-        b _ ('\xc2':'\xbb':xs) = error "unexpected closing french quote"
+        b _ ('\xc2':'\xbb':_)  = error "unexpected closing french quote"
         b k ('{':'-':xs)       = "{-" ++ c (("-}"++) . b k) xs
         b k ('{':xs)           = '{' : b (('}':) . b k) xs
         b k ('}':xs)           = k xs
