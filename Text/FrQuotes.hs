@@ -28,6 +28,7 @@ openFrQQ  = frTop ++ openFrQQ'
 closeFrQQ = closeFrQQ' ++ "))"
 openFrQ   = "\xc2\xab"
 closeFrQ  = "\xc2\xbb"
+-- one could generate a list and mconcat it instead of these mappend
 openBr    = closeFrQQ' ++ " `mappend` frAntiq ("
 closeBr   = ") `mappend` " ++ openFrQQ'
 
