@@ -1,4 +1,23 @@
 module Text.FrQuotes (frQuotes) where
+{-
+import Test.QuickCheck
+
+breakWithSpec :: (a -> Bool) -> ([a] -> [a]) -> [a] -> [a]
+breakWithSpec p k xs = takeWhile p xs ++ k (dropWhile p xs)
+
+breakWith_prop x y xs = breakWithSpec p k xs == breakWith p k xs
+  where p = (==x)
+        k = map (+y)
+-}
+
+--breakWith :: (a -> Bool) -> (a -> [a] -> [a]) -> [a] -> [a]
+
+breakWith :: (a -> Bool) -> ([a] -> [a]) -> [a] -> [a]
+breakWith _ k []
+  = k []
+breakWith p k (x:xs)
+  | p x        = x : breakWith p k xs
+  | otherwise  = k (x:xs)
 
 frTop, openFrQQ', closeFrQQ', openFrQQ, closeFrQQ,
   openFrQ, closeFrQ, openBr, closeBr :: String
@@ -35,7 +54,18 @@ frQuotes = h
         h ('"':xs)             = '"' : s (('"':) . h) xs
         h ('\'':xs)            = '\'' : a h xs
         h ('[':'$':xs)         = '[' : '$' : startq h xs
+        h ('-':'-':xs)         = "--" ++ mc h xs
+        h (x:'-':'-':xs)       | x == ':' || isAscSymb x = x : '-' : '-' : breakWith (=='-') h xs
         h (x:xs)               = x : h xs
+
+        isAscSymb = (`elem` "!#$%&*+./<=>?@\\^|~")
+        isSymb x = x == '-' || x == ':' || isAscSymb x
+
+        mc k ""         = k ""
+        mc k ('-':xs)   = '-' : mc k xs
+        mc k ('\n':xs)  = '\n' : k xs
+        mc k (x:xs) | isAscSymb x  = x : breakWith isSymb k xs
+                    | otherwise    = x : breakWith (/='\n') k xs
 
         -- french quotes context
         f _ ""                 = error "unterminated french quotes (expecting `\xc2\xbb')"
@@ -53,6 +83,8 @@ frQuotes = h
         b k ('{':xs)           = '{' : b (('}':) . b k) xs
         b k ('}':xs)           = k xs
         b k ('"':xs)           = '"' : s (('"':) . b k) xs
+        b _ ('-':'-':xs)       = mc (\_-> error "unexpected one line haskell comment (as in \"-- foo\") in curly braces") xs
+        b k (x:'-':'-':xs)     | x == ':' || isAscSymb x = x : '-' : '-' : breakWith (=='-') k xs
         b k (x:xs)             = x : b k xs
 
         -- haskell (nested) comments
