@@ -21,7 +21,7 @@ interact' f = do
     [] -> interact f
     [in1,inp,outp] ->
           writeBinaryFile outp . g . f =<< readBinaryFile inp
-            where g = (("{-# LINE 2 \""++in1++"\" #-}\n")++)
+            where g = (("{-# LINE 1 \""++in1++"\" #-}\n")++)
     _  -> fail "Usage: frquotes [<orig> <input> <output>]"
 
 main :: IO ()
