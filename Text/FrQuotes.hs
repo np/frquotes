@@ -20,14 +20,15 @@ breakWith p k (x:xs)
   | otherwise  = k (x:xs)
 
 frTop, openFrQQ', closeFrQQ', openFrQQ, closeFrQQ,
-  openFrQ, closeFrQ, openBr, closeBr :: String
+  openBr, closeBr :: String
+openFrQ, closeFrQ :: Char
 frTop = "(frTop ("
 openFrQQ'  = "[$frQQ|"
 closeFrQQ' = "|]"
 openFrQQ  = frTop ++ openFrQQ'
 closeFrQQ = closeFrQQ' ++ "))"
-openFrQ   = "\xc2\xab"
-closeFrQ  = "\xc2\xbb"
+openFrQ   = '«'
+closeFrQ  = '»'
 -- one could generate a list and mconcat it instead of these mappend
 openBr    = closeFrQQ' ++ " `mappend` frAntiq ("
 closeBr   = ") `mappend` " ++ openFrQQ'
@@ -35,7 +36,6 @@ closeBr   = ") `mappend` " ++ openFrQQ'
 -- Substitutes UTF8 french quotes «...» for (frTop [$frQQ|...|])
 -- Antiquotations are supported via braces {...} and are
 -- substituted for frAntiq, blocks are catenated with mappend.
--- Here String is used as UTF-8 code points.
 frQuotes :: String -> String
 frQuotes = h
         -- All these functions follow the same style,
@@ -49,8 +49,8 @@ frQuotes = h
         -- haskell context
         -- the h function don't needs a continuation parameter
   where h ""                   = ""
-        h ('\xc2':'\xab':'{':xs) = frTop ++ "( frAntiq (" ++ b ((closeBr++) . f ((closeFrQQ++) . (')':) . h)) xs -- avoid an empty [$frQQ||]
-        h ('\xc2':'\xab':xs)   = openFrQQ ++ f ((closeFrQQ++) . h) xs
+        h ('«':'{':xs)         = frTop ++ "( frAntiq (" ++ b ((closeBr++) . f ((closeFrQQ++) . (')':) . h)) xs -- avoid an empty [$frQQ||]
+        h ('«':xs)             = openFrQQ ++ f ((closeFrQQ++) . h) xs
         h ('{':'-':xs)         = "{-" ++ c (("-}"++) . h) xs
         h ('"':xs)             = '"' : s (('"':) . h) xs
         h ('\'':xs)            = '\'' : a h xs
@@ -72,14 +72,14 @@ frQuotes = h
         f _ ""                 = error "unterminated french quotes (expecting `\xc2\xbb')"
         f _ ('}':_)            = error "unexpected closing brace `}'"
         f k ('{':xs)           = openBr  ++ b ((closeBr++)  . f k) xs
-        f k ('\xc2':'\xab':xs) = openFrQ ++ f ((closeFrQ++) . f k) xs
-        f k ('\xc2':'\xbb':xs) = k xs
+        f k ('«':xs)           = openFrQ : f ((closeFrQ:) . f k) xs
+        f k ('»':xs)           = k xs
         f k (x:xs)             = x : f k xs
 
         -- braces (haskell) context
         b _ ""                 = error "unterminated quotes hole using curly braces (expecting `}')"
-        b k ('\xc2':'\xab':xs) = openFrQQ ++ f ((closeFrQQ++) . b k) xs
-        b _ ('\xc2':'\xbb':_)  = error "unexpected closing french quote"
+        b k ('«':xs)           = openFrQQ ++ f ((closeFrQQ++) . b k) xs
+        b _ ('»':_)            = error "unexpected closing french quote"
         b k ('{':'-':xs)       = "{-" ++ c (("-}"++) . b k) xs
         b k ('{':xs)           = '{' : b (('}':) . b k) xs
         b k ('}':xs)           = k xs
