@@ -70,7 +70,9 @@ frQuotes = h
 
         -- french quotes context
         f _ ""                 = error "unterminated french quotes (expecting `\xc2\xbb')"
+        f k ('}':'}':xs)       = '}' : f k xs
         f _ ('}':_)            = error "unexpected closing brace `}'"
+        f k ('{':'{':xs)       = '{' : f k xs
         f k ('{':xs)           = openBr  ++ b ((closeBr++)  . f k) xs
         f k ('«':xs)           = openFrQ : f ((closeFrQ:) . f k) xs
         f k ('»':xs)           = k xs
