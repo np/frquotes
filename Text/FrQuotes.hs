@@ -1,4 +1,5 @@
 module Text.FrQuotes (frQuotes) where
+import Data.Char (isLetter)
 {-
 import Test.QuickCheck
 
@@ -69,14 +70,26 @@ frQuotes = h
                     | otherwise    = x : breakWith (/='\n') k xs
 
         -- french quotes context
-        f _ ""                 = error "unterminated french quotes (expecting `\xc2\xbb')"
+        f _ ""                 = error "unterminated french quotes (expecting `»')"
         f k ('}':'}':xs)       = '}' : f k xs
         f _ ('}':_)            = error "unexpected closing brace `}'"
         f k ('{':'{':xs)       = '{' : f k xs
-        f k ('{':xs)           = openBr  ++ b ((closeBr++)  . f k) xs
+        f k ('{':xs)           = openBr ++ bOq "" ((closeBr++) . f k) xs
         f k ('«':xs)           = openFrQ : f ((closeFrQ:) . f k) xs
         f k ('»':xs)           = k xs
         f k (x:xs)             = x : f k xs
+
+        bOq _  _ ""            = error "unterminated quote hole using curly braces (expecting `}`)"
+        bOq qn k ('|':xs)
+          | null qn            = error "unexpected `|' in quote hole"
+          | otherwise          = '[' : '$' : reverse qn ++ '|' : bq k xs
+        bOq qn k (x:xs)
+          | isLetter x         = bOq (x:qn) k xs
+          | otherwise          = b k (reverse qn++x:xs)
+
+        bq _ ""                = error "unterminated haskell quasi-quotation using curly braces in french quotes (expecting `}')"
+        bq k ('}':xs)          = '|' : ']' : k xs
+        bq k (x:xs)            = x : bq k xs
 
         -- braces (haskell) context
         b _ ""                 = error "unterminated quotes hole using curly braces (expecting `}')"
