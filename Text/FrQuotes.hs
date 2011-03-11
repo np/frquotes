@@ -55,7 +55,8 @@ frQuotes = h
         h ('{':'-':xs)         = "{-" ++ c (("-}"++) . h) xs
         h ('"':xs)             = '"' : s (('"':) . h) xs
         h ('\'':xs)            = '\'' : a h xs
-        h ('[':'$':xs)         = '[' : '$' : startq h xs
+        h ('[':'$':xs)         = hOq "" h xs
+        h ('[':xs)             = hOq "" h xs
         h ('-':'-':xs)         = "--" ++ mc h xs
         h (x:'-':'-':xs)       | x == ':' || isAscSymb x = x : '-' : '-' : breakWith (=='-') h xs
         h (x:xs)               = x : h xs
@@ -63,6 +64,7 @@ frQuotes = h
         isAscSymb = (`elem` "!#$%&*+./<=>?@\\^|~")
         isSymb x = x == '-' || x == ':' || isAscSymb x
 
+        -- maybe a one line comment
         mc k ""         = k ""
         mc k ('-':xs)   = '-' : mc k xs
         mc k ('\n':xs)  = '\n' : k xs
@@ -79,7 +81,8 @@ frQuotes = h
         f k ('»':xs)           = k xs
         f k (x:xs)             = x : f k xs
 
-        bOq _  _ ""            = error "unterminated quote hole using curly braces (expecting `}`)"
+        -- brace hole OR quasi-quotation
+        bOq qn k ""            = k (reverse qn)
         bOq qn k ('|':xs)
           | null qn            = error "unexpected `|' in quote hole"
           | otherwise          = '[' : '$' : reverse qn ++ '|' : bq k xs
@@ -128,7 +131,12 @@ frQuotes = h
         q _ ""                 = error "unterminated haskell quasi-quotation (expecting `|]')"
         q k ('|':']':xs)       = '|' : ']' : k xs
         q k (x:xs)             = x : q k xs
-        startq k xs = ys ++ '|' : q k zs'
-          where (ys,zs) = break (=='|') xs
-                zs' | null zs   = error "unrecognized haskell quasi-quotation (expecting `|`)"
-                    | otherwise = drop 1 zs
+
+        -- haskell code OR quasi-quotation
+        hOq qn k ""            = k (reverse qn)
+        hOq qn k ('|':xs)
+          | null qn            = k ('|':xs)
+          | otherwise          = '[' : '$' : reverse qn ++ '|' : q k xs
+        hOq qn k (x:xs)
+          | isLetter x         = hOq (x:qn) k xs
+          | otherwise          = k (reverse qn++x:xs)
