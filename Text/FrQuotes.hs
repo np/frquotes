@@ -55,8 +55,8 @@ frQuotes = h
         h ('{':'-':xs)         = "{-" ++ c (("-}"++) . h) xs
         h ('"':xs)             = '"' : s (('"':) . h) xs
         h ('\'':xs)            = '\'' : a h xs
-        h ('[':'$':xs)         = hOq "" h xs
-        h ('[':xs)             = hOq "" h xs
+        h ('[':'$':xs)         = '[' : hOq "" h xs
+        h ('[':xs)             = '[' : hOq "" h xs
         h ('-':'-':xs)         = "--" ++ mc h xs
         h (x:'-':'-':xs)       | x == ':' || isAscSymb x = x : '-' : '-' : breakWith (=='-') h xs
         h (x:xs)               = x : h xs
@@ -132,11 +132,11 @@ frQuotes = h
         q k ('|':']':xs)       = '|' : ']' : k xs
         q k (x:xs)             = x : q k xs
 
-        -- haskell code OR quasi-quotation
+        -- We've seen a `[' is it an Haskell list or a quasi-quotation
         hOq qn k ""            = k (reverse qn)
         hOq qn k ('|':xs)
           | null qn            = k ('|':xs)
-          | otherwise          = '[' : '$' : reverse qn ++ '|' : q k xs
+          | otherwise          = '$' : reverse qn ++ '|' : q k xs
         hOq qn k (x:xs)
           | isLetter x         = hOq (x:qn) k xs
           | otherwise          = k (reverse qn++x:xs)
