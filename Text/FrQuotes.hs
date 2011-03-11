@@ -87,8 +87,9 @@ frQuotes = h
           | isLetter x         = bOq (x:qn) k xs
           | otherwise          = b k (reverse qn++x:xs)
 
-        bq _ ""                = error "unterminated haskell quasi-quotation using curly braces in french quotes (expecting `}')"
-        bq k ('}':xs)          = '|' : ']' : k xs
+        -- brace quasi-quotation {qq|...|}
+        bq _ ""                = error "unterminated haskell quasi-quotation using curly braces in french quotes (expecting `|}')"
+        bq k ('|':'}':xs)      = '|' : ']' : k xs
         bq k (x:xs)            = x : bq k xs
 
         -- braces (haskell) context

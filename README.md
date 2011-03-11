@@ -11,11 +11,11 @@ There is a new form of literals delimited by `«` and `»`.
     expression ::= ...
                  | '«' fr-elem* '»'
 
-    fr-elem ::= any non '«', '»', '{', '}' character   -- plain character
-              | '{' expression '}'                     -- hole/antiquotation
-              | '{' name '|' quasi-quote-character '}' -- quasi-quotation
-              | '{' '{'                                -- escaped '{'
-              | '}' '}'                                -- escaped '}'
+    fr-elem ::= any non '«', '»', '{', '}' character    -- plain character
+              | '{' expression '}'                      -- hole/antiquotation
+              | '{' name '|' quasi-quote-character '|}' -- quasi-quotation
+              | '{' '{'                                 -- escaped '{'
+              | '}' '}'                                 -- escaped '}'
               | '«' fr-elem* '»'
 
 
@@ -34,4 +34,4 @@ Examples
     «some «nested with {hole «that reuse quotes» and {braces} also}» french {hole} quote»
     «{start} with {a} hole»
     «stop {with} a {hole}»
-    «bla {foo|bar} baz»
+    «bla {foo|bar|} baz»
