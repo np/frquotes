@@ -101,6 +101,7 @@ frQuotes = h
         b _ ('»':_)            = error "unexpected closing french quote"
         b k ('{':'-':xs)       = "{-" ++ c (("-}"++) . b k) xs
         b k ('{':xs)           = '{' : b (('}':) . b k) xs
+        b _ ('|':'}':_)        = error "unexpected `|}' (end of braced quasi-quotation) in a braced hole context"
         b k ('}':xs)           = k xs
         b k ('"':xs)           = '"' : s (('"':) . b k) xs
         b _ ('-':'-':xs)       = mc (\_-> error "unexpected one line haskell comment (as in \"-- foo\") in curly braces") xs
