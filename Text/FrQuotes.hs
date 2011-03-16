@@ -21,10 +21,16 @@ breakWith p k (x:xs)
   | p x        = x : breakWith p k xs
   | otherwise  = k (x:xs)
 
+qq67 :: String
+-- GHC7
+qq67 = ""
+-- GHC6
+-- qq67 = "$"
+
 frTop, openFrQQ', closeFrQQ', openFrQQ, closeFrQQ,
   openBr, closeBr :: String
 frTop = "(frTop ("
-openFrQQ'  = "[$frQQ|"
+openFrQQ'  = "[" ++ qq67 ++ "frQQ|"
 closeFrQQ' = "|]"
 openFrQQ  = frTop ++ openFrQQ'
 closeFrQQ = closeFrQQ' ++ "))"
@@ -32,7 +38,7 @@ closeFrQQ = closeFrQQ' ++ "))"
 openBr    = closeFrQQ' ++ " `mappend` frAntiq ("
 closeBr   = ") `mappend` " ++ openFrQQ'
 
--- Substitutes UTF8 french quotes «...» for (frTop [$frQQ|...|])
+-- Substitutes UTF8 french quotes «...» for (frTop [frQQ|...|])
 -- Antiquotations are supported via braces {...} and are
 -- substituted for frAntiq, blocks are catenated with mappend.
 frQuotes :: String -> String
@@ -48,7 +54,7 @@ frQuotes = h
         -- haskell context
         -- the h function don't needs a continuation parameter
   where h ""                   = ""
-        h ('«':'{':xs) | noesc xs = frTop ++ "( frAntiq (" ++ b ((closeBr++) . f ((closeFrQQ++) . (')':) . h)) xs -- avoid an empty [$frQQ||]
+        h ('«':'{':xs) | noesc xs = frTop ++ "( frAntiq (" ++ b ((closeBr++) . f ((closeFrQQ++) . (')':) . h)) xs -- avoids an empty [frQQ||]
         h ('«':xs)             = openFrQQ ++ f ((closeFrQQ++) . h) xs
         h ('{':'-':xs)         = "{-" ++ c (("-}"++) . h) xs
         h ('"':xs)             = '"' : s (('"':) . h) xs
@@ -88,7 +94,7 @@ frQuotes = h
         bOq qn k ""            = k (reverse qn)
         bOq qn k ('|':xs)
           | null qn            = error "unexpected `|' in quote hole"
-          | otherwise          = '[' : '$' : reverse qn ++ '|' : bq k xs
+          | otherwise          = "[" ++ qq67 ++ reverse qn ++ '|' : bq k xs
         bOq qn k (x:xs)
           | isLetter x         = bOq (x:qn) k xs
           | otherwise          = b k (reverse qn++x:xs)
@@ -142,7 +148,7 @@ frQuotes = h
         hOq qn k ""            = k (reverse qn)
         hOq qn k ('|':xs)
           | null qn            = k ('|':xs)
-          | otherwise          = '$' : reverse qn ++ '|' : q k xs
+          | otherwise          = qq67 ++ reverse qn ++ '|' : q k xs
         hOq qn k (x:xs)
           | isLetter x         = hOq (x:qn) k xs
           | otherwise          = k (reverse qn++x:xs)
