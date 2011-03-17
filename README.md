@@ -14,9 +14,10 @@ There is a new form of literals delimited by `«` and `»`.
     fr-elem ::= any non '«', '»', '{', '}' character    -- plain character
               | '{' expression '}'                      -- hole/antiquotation
               | '{' name '|' quasi-quote-character '|}' -- quasi-quotation
-              | '{' '{'                                 -- escaped '{'
-              | '}' '}'                                 -- escaped '}'
-              | '«' fr-elem* '»'
+              | '{«}'                                   -- escaped '«'
+              | '{»}'                                   -- escaped '»'
+              | '«{»'                                   -- escaped '{'
+              | '«}»'                                   -- escaped '}'
 
 
 Examples
@@ -27,11 +28,9 @@ Examples
     {- «not a french quote» and an «unclosed non french quote here too -} "a literal string"
     "just «a literal» string"
     "another string with an \"es«cape"
-    «some «nested» french quote»
-    «some «nested» french {hole} quote»
-    «some «nested with {hole}» french {hole} quote»
-    «some «nested with {hole «that reuse quotes»}» french {hole} quote»
-    «some «nested with {hole «that reuse quotes» and {braces} also}» french {hole} quote»
-    «{start} with {a} hole»
-    «stop {with} a {hole}»
+    «some {«}nested{»} french quote»
+    «some {«}nested{»} french {hole} quote»
+    «some {«}nested with {hole}{»} french {hole} quote»
+    «some {«}nested with {hole «that reuses quotes»}{»} french {hole} quote»
+    «some {«}nested with {hole «that reuses quotes» and {braces} also}{»} french {hole} quote»
     «bla {foo|bar|} baz»

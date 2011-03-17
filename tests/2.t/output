@@ -1,14 +1,3 @@
 {-# LINE 1 "bla" #-}
 {-# OPTIONS_GHC -F -pgmF ./frquotes #-}
-x1 = (frTop ([$frQQ|some simple french quote|]))
-x2 = (frTop ([$frQQ|some simple french quote |] `mappend` frAntiq (with a hole) `mappend` [$frQQ| inside of it|]))
-x3 = {- «not a french quote» and an «unclosed non french quote here too -} "a literal string"
-x4 = "just «a literal» string" -- here yi is badely coloring it ;(
-x5 = "another string with an \"es«cape" -- here for yi »
-x6 = (frTop ([$frQQ|some «nested» french quote|]))
-x7 = (frTop ([$frQQ|some «nested» french |] `mappend` frAntiq (hole) `mappend` [$frQQ| quote|]))
-x8 = (frTop ([$frQQ|some «nested with |] `mappend` frAntiq (hole) `mappend` [$frQQ|» french |] `mappend` frAntiq (hole) `mappend` [$frQQ| quote|]))
-x8 = (frTop ([$frQQ|some «nested with |] `mappend` frAntiq (hole (frTop ([$frQQ|that reuse quotes|]))) `mappend` [$frQQ|» french |] `mappend` frAntiq (hole) `mappend` [$frQQ| quote|]))
-x8 = (frTop ([$frQQ|some «nested with |] `mappend` frAntiq (hole (frTop ([$frQQ|that reuse quotes|])) and {braces} also) `mappend` [$frQQ|» french |] `mappend` frAntiq (hole) `mappend` [$frQQ| quote|]))
-x9 = (frTop (( frAntiq (start) `mappend` [$frQQ| with |] `mappend` frAntiq (a) `mappend` [$frQQ| hole|])))
-x10 = (frTop ([$frQQ|stop |] `mappend` frAntiq (with) `mappend` [$frQQ| a |] `mappend` frAntiq (hole) `mappend` [$frQQ||]))
+(frTop ([$frQQ|here is a |] `mappend` frAntiq (very) `mappend` [$frQQ| simple test|]))
