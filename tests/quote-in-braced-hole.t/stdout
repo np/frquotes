@@ -1,1 +1,1 @@
-(frTop ([$frQQ|...|] `mappend` frAntiq (emph[$code|...|]) `mappend` [$frQQ|...|]))
+(frTop ([frQQ|...|] `mappend` frAntiq (emph[code|...|]) `mappend` [frQQ|...|]))
