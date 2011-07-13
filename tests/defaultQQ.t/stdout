@@ -1,0 +1,2 @@
+ (frTop ([frQQ|bla |] `mappend` frAntiq ([defaultQQ|foo|]) `mappend` [frQQ| bar|]))
+bla [defaultQQ|foo|] bar

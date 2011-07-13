@@ -19,6 +19,11 @@ There is a new form of literals delimited by `«` and `»`.
               | '«{»'                                   -- escaped '{'
               | '«}»'                                   -- escaped '}'
 
+Default Quotations
+==================
+
+If no name is given to a quotation, the quotation defaultQQ is
+assumed.
 
 Examples
 ========
@@ -34,3 +39,4 @@ Examples
     «some {«}nested with {hole «that reuses quotes»}{»} french {hole} quote»
     «some {«}nested with {hole «that reuses quotes» and {braces} also}{»} french {hole} quote»
     «bla {foo|bar|} baz»
+    «bla {|foo|} bar» ≈ «bla {defaultQQ|foo|} bar»

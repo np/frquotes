@@ -90,11 +90,12 @@ frQuotes = h
         f k ('{':xs)           = openBr ++ bOq "" ((closeBr++) . f k) xs
         f k (x:xs)             = x : f k xs
 
+        qName "" = "defaultQQ"
+        qName xs = reverse xs
+
         -- brace hole OR quasi-quotation
         bOq qn k ""            = k (reverse qn)
-        bOq qn k ('|':xs)
-          | null qn            = error "unexpected `|' in quote hole"
-          | otherwise          = "[" ++ qq67 ++ reverse qn ++ '|' : bq k xs
+        bOq qn k ('|':xs)      = "[" ++ qq67 ++ qName qn ++ '|' : bq k xs
         bOq qn k (x:xs)
           | isLetter x         = bOq (x:qn) k xs
           | otherwise          = b k (reverse qn++x:xs)
@@ -146,9 +147,7 @@ frQuotes = h
 
         -- We've seen a `[' is it an Haskell list or a quasi-quotation
         hOq qn k ""            = k (reverse qn)
-        hOq qn k ('|':xs)
-          | null qn            = k ('|':xs)
-          | otherwise          = qq67 ++ reverse qn ++ '|' : q k xs
+        hOq qn k ('|':xs)      = qq67 ++ qName qn ++ '|' : q k xs
         hOq qn k (x:xs)
           | isLetter x         = hOq (x:qn) k xs
           | otherwise          = k (reverse qn++x:xs)
