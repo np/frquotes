@@ -54,7 +54,7 @@ frQuotes = h
         -- haskell context
         -- the h function don't needs a continuation parameter
   where h ""                   = ""
-        h ('«':'{':xs) | noesc xs = frTop ++ "( frAntiq (" ++ b ((closeBr++) . f ((closeFrQQ++) . (')':) . h)) xs -- avoids an empty [frQQ||]
+        h ('«':'{':xs) | noesc xs = frTop ++ "( frAntiq (" ++ bOq "" ((closeBr++) . f ((closeFrQQ++) . (')':) . h)) xs -- avoids an empty [frQQ||]
         h ('«':xs)             = openFrQQ ++ f ((closeFrQQ++) . h) xs
         h ('{':'-':xs)         = "{-" ++ c (("-}"++) . h) xs
         h ('"':xs)             = '"' : s (('"':) . h) xs
