@@ -1,6 +1,6 @@
 Name:           frquotes
 Cabal-Version:  >= 1.2
-Version:        0.2.0
+Version:        0.2.1
 Copyright:      (c) Nicolas Pouillard
 Author:         Nicolas Pouillard
 Maintainer:     Nicolas Pouillard <nicolas.pouillard@gmail.com>
